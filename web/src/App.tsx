@@ -4,10 +4,12 @@ import TodoCard from './component/TodoCard';
 
 function App() {
   const { data } = useTestData();
+  const [count, setCount] = useState(0);
   return (
     <>
       <h1>{data ?? "failed"}</h1>
       <TodoCard date={new Date()} data='hello'></TodoCard>
+      <button onClick={() => setCount(count+1)}>{count}</button>
     </>
   )
 }
