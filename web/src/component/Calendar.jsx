@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { easeIn, motion, scale } from "framer-motion";
 import CalendarCell from "./CalendarCell";
+import { HoveringCell } from "../context/HoveringCell";
+
 
 const Calendar = () => {
     const [date, setDate] = useState(new Date());// month/day/year
@@ -25,6 +27,8 @@ const Calendar = () => {
         const weekdayName = dayDate.toLocaleDateString("en-US", { weekday: "short" })
         calendarCells.unshift({
             day: lastMonthDays - i,
+            month: month==0?12:month ,
+            year: month==0?year-1:year,
             weekday: weekdayName,
             monthType: "last"
         }) // days
@@ -37,6 +41,8 @@ const Calendar = () => {
     const weekdayName = dayDate.toLocaleDateString("en-US", { weekday: "short" })
     calendarCells.push({
         day: d,
+        month: month + 1,
+        year: year,
         weekday: weekdayName,
         date: dayDate,
         monthType: "present"
@@ -88,8 +94,10 @@ const Calendar = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    
+    // main jsx
     return(
-        <div className="h-screen font-mono">
+        <div key={`${month}-${year}`} className="h-screen font-mono">
             <div className="flex justify-center font-bold text-2xl py-5 ">
                 {date.toLocaleDateString("en-US", {month: "long"})}  : {date.getFullYear()}
             </div>
@@ -101,11 +109,12 @@ const Calendar = () => {
                         </div>
                     )))}
                 </div>
+                
                 <div className="grid grid-cols-7 w-full text-center h-full">
                     {calendarCells.map((cell, i) =>
                         cell ? (
                         // container
-                        <CalendarCell cell={cell} i={i} today={today}></CalendarCell>
+                        <CalendarCell key={`${year}-${cell.monthType}-${cell.day}`} cell={cell} today={today}></CalendarCell>
                         ) : (
                         <div key={i} className="p-4 border bg-gray-100"></div> // empty cell
                         )
@@ -113,7 +122,6 @@ const Calendar = () => {
                 </div>
             </div>
         </div>
-        
     )
 }
 
