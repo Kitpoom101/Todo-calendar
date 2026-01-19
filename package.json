@@ -15,6 +15,6 @@
   "scripts": {
     "start-backend": "cd server && npx nodemon index.js",
     "start-frontend": "cd web && npm run dev",
-    "dev":"concurrently \"npm run start-backend\" \"npm run start-frontend\""
+    "dev": "concurrently \"npm run start-backend\" \"npm run start-frontend\""
   }
 }
