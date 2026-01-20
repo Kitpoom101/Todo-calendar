@@ -2,10 +2,12 @@ import { useState, useEffect } from "react"
 import AddTodo from "./AddTodo";
 import { useHover } from "../context/HoveringCell";
 import { AnimatePresence, motion } from "framer-motion";
+import Calendar from "./Calendar";
 
 const Layout = ({ children }) => {
     const [openAdd, setOpenAdd] = useState(false);
     const { activeCell } = useHover();
+    const [monthIndex, setMonthIndex] = useState(0);
     // here is to change bg color to match hovered cell
     
     const hoverWeekDayBg = {
@@ -22,20 +24,52 @@ const Layout = ({ children }) => {
         return hoverWeekDayBg[weekday]??"#adb6c4";
     }
 
+    function handleOnCellClick(date){
+        console.log(date)
+        setOpenAdd(true);
+    }
+
 return (
     <div className={`h-screen justify-center`} style={{backgroundColor: changeBG(activeCell)}}>
         {/* calendar */}
         <div className="z-10 w-screen">
-            {children}
+            <Calendar monthIndex={monthIndex} onClick={handleOnCellClick}></Calendar>
         </div>
         {/* add form and button */}
-        <div className="flex fixed bottom-10 right-10 z-20">
+        <div className="flex fixed top-2.5 z-20 ">
+            {/* left */}
             <button 
-            className="bg-white rounded-full w-16 h-16 hover:bg-slate-100 transition-colors duration-200" 
-            onClick={() => setOpenAdd(!openAdd)}>
-                +
+            className="bg-white fixed left-0 rounded-xl w-24 h-16 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
+            onClick={() => setMonthIndex(monthIndex - 1)}>
+                <svg 
+                stroke="currentColor" 
+                fill="currentColor" 
+                stroke-width="0" 
+                viewBox="0 0 16 16" 
+                height="2em"
+                width="2em" 
+                xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M7.854 4.646a.5.5 0 010 .708L5.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clip-rule="evenodd"></path><path fill-rule="evenodd" d="M4.5 8a.5.5 0 01.5-.5h6.5a.5.5 0 010 1H5a.5.5 0 01-.5-.5z" clip-rule="evenodd">
+                    </path>
+                </svg>
+            </button>
+            {/* right */}
+            <button 
+            className="bg-white fixed right-0 rounded-xl w-24 h-16 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
+            onClick={() => setMonthIndex(monthIndex + 1)}>
+                <svg 
+                stroke="currentColor" 
+                fill="currentColor" 
+                stroke-width="0" 
+                viewBox="0 0 16 16" 
+                height="2em" width="2em" 
+                xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8.146 4.646a.5.5 0 01.708 0l3 3a.5.5 0 010 .708l-3 3a.5.5 0 01-.708-.708L10.793 8 8.146 5.354a.5.5 0 010-.708z" clip-rule="evenodd"></path><path fill-rule="evenodd" d="M4 8a.5.5 0 01.5-.5H11a.5.5 0 010 1H4.5A.5.5 0 014 8z" clip-rule="evenodd">
+                    </path>
+                </svg>
             </button>
         </div>
+        
         <AnimatePresence>
         {openAdd && (
             <AddTodo onClose={() => setOpenAdd(false)} />

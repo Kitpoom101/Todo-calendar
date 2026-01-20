@@ -12,7 +12,7 @@ function App() {
       // to pass context around in layout
     <HoveringCell>
       <Layout>
-        <Calendar></Calendar>
+        
       </Layout>
     </HoveringCell>
   )

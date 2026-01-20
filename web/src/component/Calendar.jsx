@@ -4,16 +4,18 @@ import CalendarCell from "./CalendarCell";
 import { HoveringCell } from "../context/HoveringCell";
 
 
-const Calendar = () => {
-    const [date, setDate] = useState(new Date());// month/day/year
+const Calendar = ({monthIndex, onClick}) => {
+    const [date, setDate] = useState(new Date());// month/day/year for today
     
     const today = date.getDate();// get day(0-31)
     const year = date.getFullYear();// get year
-    const month = date.getMonth();// get month
+    const month = date.getMonth() + monthIndex;// get month( 0 - 11 ) + monthIndex
+    const displayDate = new Date(year, month);// when monthIndex change this change
     const daysInMonth = new Date(year, month + 1, 0).getDate()// get last day of prev month
     const lastMonthDays = new Date(year, month, 0).getDate()
     const weekDaysList = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];// array of weekDay
 
+    
     // 1. What day does the month start on (0=Sun, 1=Mon, ... 6=Sat)
     const firstDayIndex = new Date(year, month, 1).getDay()
 
@@ -30,7 +32,6 @@ const Calendar = () => {
             month: month==0?12:month ,
             year: month==0?year-1:year,
             weekday: weekdayName,
-            monthType: "last"
         }) // days
     }
 
@@ -45,7 +46,6 @@ const Calendar = () => {
         year: year,
         weekday: weekdayName,
         date: dayDate,
-        monthType: "present"
     })
     }
 
@@ -94,12 +94,11 @@ const Calendar = () => {
         return () => clearTimeout(timer);
     }, []);
 
-    
     // main jsx
     return(
         <div key={`${month}-${year}`} className="h-screen font-mono">
             <div className="flex justify-center font-bold text-2xl py-5 ">
-                {date.toLocaleDateString("en-US", {month: "long"})}  : {date.getFullYear()}
+                {displayDate.toLocaleDateString("en-US", {month: "long"})}  : {displayDate.getFullYear()}
             </div>
             <div className="h-3/4">
                 <div className="grid grid-cols-7 w-full text-center font-bold my-3">
@@ -114,7 +113,7 @@ const Calendar = () => {
                     {calendarCells.map((cell, i) =>
                         cell ? (
                         // container
-                        <CalendarCell key={`${year}-${cell.monthType}-${cell.day}`} cell={cell} today={today}></CalendarCell>
+                        <CalendarCell key={`${year}-${cell.month}-${cell.day}`} cell={cell} today={today} onClick={onClick}></CalendarCell>
                         ) : (
                         <div key={i} className="p-4 border bg-gray-100"></div> // empty cell
                         )
