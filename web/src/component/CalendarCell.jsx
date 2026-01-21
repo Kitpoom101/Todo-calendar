@@ -20,7 +20,7 @@ const CalendarCell = ({cell, today, onClick}) => {
 
     function clickMethod(){
         setActiveCell(`${cell.weekday}`);
-        onClick("HELLO FROM " + cell.day)
+        onClick(cell)// send data to AddTodo
         // console.log(cell.day + "+" + cell.month)
         // console.log(today + "+" + (thisMonth.getMonth()+1))
     }

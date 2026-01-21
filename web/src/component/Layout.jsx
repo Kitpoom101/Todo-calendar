@@ -8,6 +8,7 @@ const Layout = ({ children }) => {
     const [openAdd, setOpenAdd] = useState(false);
     const { activeCell } = useHover();
     const [monthIndex, setMonthIndex] = useState(0);
+    const [cellDate, setCellDate] = useState("Null");
     // here is to change bg color to match hovered cell
     
     const hoverWeekDayBg = {
@@ -25,8 +26,8 @@ const Layout = ({ children }) => {
     }
 
     function handleOnCellClick(date){
-        console.log(date)
-        setOpenAdd(true);
+        setCellDate(date); // pass the clicked date
+        setOpenAdd(true); // open todo
     }
 
 return (
@@ -72,7 +73,7 @@ return (
         
         <AnimatePresence>
         {openAdd && (
-            <AddTodo onClose={() => setOpenAdd(false)} />
+            <AddTodo date={cellDate} onClose={() => setOpenAdd(false)} />
         )}
         </AnimatePresence>
     </div>
