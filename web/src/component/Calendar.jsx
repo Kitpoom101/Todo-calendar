@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { easeIn, motion, scale } from "framer-motion";
 import CalendarCell from "./CalendarCell";
-import { HoveringCell } from "../context/HoveringCell";
 
 
-const Calendar = ({monthIndex, onClick}) => {
+const Calendar = ({monthIndex, onClick, setMonthIndex}) => {
     const [date, setDate] = useState(new Date());// month/day/year for today
     
     const today = date.getDate();// get day(0-31)
@@ -14,6 +13,7 @@ const Calendar = ({monthIndex, onClick}) => {
     const daysInMonth = new Date(year, month + 1, 0).getDate()// get last day of prev month
     const lastMonthDays = new Date(year, month, 0).getDate()
     const weekDaysList = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];// array of weekDay
+
 
     
     // 1. What day does the month start on (0=Sun, 1=Mon, ... 6=Sat)
@@ -83,6 +83,7 @@ const Calendar = ({monthIndex, onClick}) => {
             onDayChange(callback);
         }, msUntilMidnight);
     }
+    
 
     // start once
     useEffect(() => {
@@ -97,8 +98,8 @@ const Calendar = ({monthIndex, onClick}) => {
     // main jsx
     return(
         <div key={`${month}-${year}`} className="h-screen font-mono">
-            <div className="flex justify-center font-bold text-2xl py-5 ">
-                {displayDate.toLocaleDateString("en-US", {month: "long"})}  : {displayDate.getFullYear()}
+            <div className="flex justify-center font-bold text-2xl" onClick={() => setMonthIndex(0)}>
+                <p className="hover:bg-sky-100/80 p-4 mt-1 rounded-2xl" >{displayDate.toLocaleDateString("en-US", {month: "long"})}  : {displayDate.getFullYear()}</p>
             </div>
             <div className="h-3/4">
                 <div className="grid grid-cols-7 w-full text-center font-bold my-3">

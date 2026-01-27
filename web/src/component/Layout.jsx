@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import AddTodo from "./AddTodo";
 import { useHover } from "../context/HoveringCell";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, spring } from "framer-motion";
 import Calendar from "./Calendar";
 
 const Layout = ({ children }) => {
     const [openAdd, setOpenAdd] = useState(false);
-    const { activeCell } = useHover();
+    const { activeCell, setActiveCell } = useHover();
     const [monthIndex, setMonthIndex] = useState(0);
+    const [direction, setDirection] = useState(-1);
     const [cellDate, setCellDate] = useState("Null");
+
+
     // here is to change bg color to match hovered cell
     
     const hoverWeekDayBg = {
@@ -30,18 +33,48 @@ const Layout = ({ children }) => {
         setOpenAdd(true); // open todo
     }
 
+    function handleOnClose(){
+        setOpenAdd(false)
+        setActiveCell(null);
+    }
+
+    function handleButtonClicked(direction){
+        setDirection(direction)
+        setMonthIndex(prev => prev + direction); 
+    }
+
 return (
-    <div className={`h-screen justify-center`} style={{backgroundColor: changeBG(activeCell)}}>
+    <div className={`h-screen justify-center transition-colors duration-200 ease-in`} style={{backgroundColor: changeBG(activeCell)}}>
         {/* calendar */}
-        <div className="z-10 w-screen">
-            <Calendar monthIndex={monthIndex} onClick={handleOnCellClick}></Calendar>
-        </div>
+        <AnimatePresence mode="popLayout" custom={direction}>
+            <motion.div 
+        className="z-10 w-screen"
+        key={monthIndex}
+        custom={direction}
+        animate={{
+            x:"0%",
+            transition: { 
+                duration: 0.5,
+                ease: "easeInOut"
+            }
+        }}
+        initial={{
+            x: direction > 0 ? "100%" : "-100%",
+        }}
+        exit={{
+            x: direction > 0 ? "-100%" : "100%",
+            opacity: 0,
+            transition:{duration: 0.3}
+        }}
+        >
+            <Calendar monthIndex={monthIndex} onClick={handleOnCellClick} setMonthIndex={setMonthIndex}></Calendar>
+        </motion.div>
         {/* add form and button */}
-        <div className="flex fixed top-2.5 z-20 ">
+        <div className="flex fixed top-0 py-2 z-20 ">
             {/* left */}
             <button 
-            className="bg-white fixed left-0 rounded-xl w-24 h-16 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
-            onClick={() => setMonthIndex(monthIndex - 1)}>
+            className="bg-white fixed left-0 rounded-xl w-24 h-14 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
+            onClick={() => {handleButtonClicked(-1)}}>
                 <svg 
                 stroke="currentColor" 
                 fill="currentColor" 
@@ -56,8 +89,8 @@ return (
             </button>
             {/* right */}
             <button 
-            className="bg-white fixed right-0 rounded-xl w-24 h-16 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
-            onClick={() => setMonthIndex(monthIndex + 1)}>
+            className="bg-white fixed right-0 rounded-xl w-24 h-14 hover:bg-slate-100 transition-colors duration-200 flex justify-center items-center" 
+            onClick={() => {handleButtonClicked(1)}}>
                 <svg 
                 stroke="currentColor" 
                 fill="currentColor" 
@@ -70,10 +103,11 @@ return (
                 </svg>
             </button>
         </div>
+        </AnimatePresence>
         
         <AnimatePresence>
         {openAdd && (
-            <AddTodo date={cellDate} onClose={() => setOpenAdd(false)} />
+            <AddTodo date={cellDate} onClose={handleOnClose} />
         )}
         </AnimatePresence>
     </div>

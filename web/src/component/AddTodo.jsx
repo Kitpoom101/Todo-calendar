@@ -1,8 +1,28 @@
 import { AnimatePresence, easeOut, motion } from "framer-motion";
 import { useHover } from "../context/HoveringCell";
+import useInputHook from "../hooks/useInputHook";
+import { useState } from "react";
+
 
 const AddTodo = ({onClose, date}) => {
-    const { activeCell } = useHover();
+    const { activeCell, setActiveCell } = useHover();
+    const [title, setTitle] = useState("");
+    const { createInput, loading, error } = useInputHook();
+    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!title.trim()) return;
+
+        // close first before sending data back for better ux
+        onClose();
+        console.log("Submitting:", title);
+
+        
+        await createInput(title, (date.day + "/" + date.month + "/" + date.year));
+        setTitle("");
+    };
 
     const hoverWeekDayBg = {
         Sun: "bg-[#fecaca]",
@@ -21,7 +41,7 @@ const AddTodo = ({onClose, date}) => {
     return(
         <>
         <motion.div 
-            className="fixed top-0 w-screen h-screen bg-amber-50/30 backdrop-blur-sm " onClick={onClose}
+            className="fixed top-0 w-screen h-screen bg-amber-50/30 backdrop-blur-sm z-0" onClick={onClose}
             initial={{x: "100%", }}
             animate={{x: "0%", transition: {duration: 0.2, ease: "easeIn"},}}
             exit={{x: "-100%", }}
@@ -45,17 +65,28 @@ const AddTodo = ({onClose, date}) => {
                 }}
         >
             <div className="flex flex-col items-center h-full ">
-                <div className="fixed top-4 right-8 font-bold text-red-600 text-2xl" onClick={onClose}> 
+                {/* top part */}
+                <div className="fixed top-4 right-8 font-bold hover:text-red-600 text-2xl" onClick={onClose}> 
                     <svg stroke="currentColor" fill="red" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" 
                     xmlns="http://www.w3.org/2000/svg">
-                        <path fill="red" stroke="#000" stroke-width="2" d="M3,3 L21,21 M3,21 L21,3"></path>
+                        <path fill="red" stroke="#currentColor" stroke-width="2" d="M3,3 L21,21 M3,21 L21,3"></path>
                     </svg>   
                 </div>
                 <div className="bg-amber-50 w-full flex items-center justify-center font-bold text-2xl h-24 ">
                     <h1>{date.day} / {date.month} / {date.year}</h1>
                 </div>
-                <p className="bg-amber-100">Description <input type="text" className="border "/></p>
-                <div className={`fixed bottom-4 right-8 border-2  px-4 py-2 rounded-xl ${changeBG(activeCell)} hover:brightness-90`}><button className="font-mono">Enter!</button></div>
+                {/* user interact part */}
+                <form onSubmit={handleSubmit}>
+                    <p className="bg-amber-100">
+                        Description 
+                        <input className="border" type="text" placeholder="Whats on your mind" value={title} onChange={(e) => setTitle(e.target.value)}  />
+                    </p>
+                    <div className={`fixed bottom-4 right-8 border-2  px-4 py-2 rounded-xl ${changeBG(activeCell)} hover:brightness-110`}>
+                        <button className="font-mono" type="submit">
+                            Enter!
+                        </button>
+                    </div>
+                </form>
             </div>
         </motion.div>
         </>
