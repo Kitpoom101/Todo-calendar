@@ -17,7 +17,6 @@ const createTable = db.transaction(() => {
     `).run();
 })
 
-
 createTable();
 
 app.use(express.json());

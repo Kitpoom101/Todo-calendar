@@ -4,11 +4,11 @@ import { useHover } from "../context/HoveringCell";
 import { AnimatePresence, motion, spring } from "framer-motion";
 import Calendar from "./Calendar";
 
-const Layout = ({ children }) => {
+const Layout = ({ onOpenMain }) => {
     const [openAdd, setOpenAdd] = useState(false);
     const { activeCell, setActiveCell } = useHover();
     const [monthIndex, setMonthIndex] = useState(0);
-    const [direction, setDirection] = useState(-1);
+    const direction = useRef(1);
     const [cellDate, setCellDate] = useState("Null");
 
 
@@ -24,8 +24,17 @@ const Layout = ({ children }) => {
         Sat: "#e9d5ff",
     };
 
+    // Now it will change at run time ( normally it would store it on initial render (from what i understand) )
+    const pageVariants = {
+        exit: (dir) => ({
+            x: dir > 0 ? "-100%" : "100%",
+            opacity: 0,
+            transition:{duration: 0.3}
+        }),
+    };
+
     function changeBG(weekday){
-        return hoverWeekDayBg[weekday]??"#adb6c4";
+        return hoverWeekDayBg[weekday]??"var(--color-sky-100)";
     }
 
     function handleOnCellClick(date){
@@ -38,19 +47,32 @@ const Layout = ({ children }) => {
         setActiveCell(null);
     }
 
-    function handleButtonClicked(direction){
-        setDirection(direction)
-        setMonthIndex(prev => prev + direction); 
+    function handleButtonClicked(dir){
+        direction.current = dir;
+        setMonthIndex(prev => prev + dir); 
     }
 
 return (
-    <div className={`h-screen justify-center transition-colors duration-200 ease-in`} style={{backgroundColor: changeBG(activeCell)}}>
+    <div style={{backgroundColor: changeBG(activeCell)}}>
+    <motion.div className={`h-screen justify-center transition-colors duration-200 ease-in`} 
+    initial={{
+        opacity: 0,
+    }}
+    animate={{
+        opacity: 1,
+    }}
+    exit={{
+        opacity: 0,
+        transition: {duration: 0.2, },
+    }}
+    >
         {/* calendar */}
-        <AnimatePresence mode="popLayout" custom={direction}>
-            <motion.div 
+        <AnimatePresence mode="popLayout" custom={direction.current}>
+        <motion.div 
         className="z-10 w-screen"
         key={monthIndex}
-        custom={direction}
+        custom={direction.current}
+        variants={pageVariants}
         animate={{
             x:"0%",
             transition: { 
@@ -59,13 +81,9 @@ return (
             }
         }}
         initial={{
-            x: direction > 0 ? "100%" : "-100%",
+            x: direction.current > 0 ? "100%" : "-100%",
         }}
-        exit={{
-            x: direction > 0 ? "-100%" : "100%",
-            opacity: 0,
-            transition:{duration: 0.3}
-        }}
+        exit="exit"
         >
             <Calendar monthIndex={monthIndex} onClick={handleOnCellClick} setMonthIndex={setMonthIndex}></Calendar>
         </motion.div>
@@ -110,7 +128,19 @@ return (
             <AddTodo date={cellDate} onClose={handleOnClose} />
         )}
         </AnimatePresence>
+        {/* exit to main */}
+        <div className="bg-linear-to-t from-white to-transparent hover:from-sky-100 transition-all duration-300 absolute w-full h-15 bottom-0 cursor-pointer "
+            onClick={onOpenMain}>
+            <div className="flex justify-center items-center h-full flex-col hover:-translate-y-1 hover:text-sky-400 transition-transform duration-300">
+                <p>Back to MainPage!</p>
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+                </svg>
+            </div>
+        </div>
+    </motion.div>
     </div>
+    
     )
 }
     

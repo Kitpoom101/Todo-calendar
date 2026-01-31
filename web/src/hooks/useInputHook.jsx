@@ -20,7 +20,7 @@ const useInputHook = () => {
                 throw new Error("Failed to create todo");
             }
 
-            const data = await res.json;
+            const data = await res.json();
             return data;
         }
         catch(e){

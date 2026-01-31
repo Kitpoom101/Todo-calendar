@@ -99,7 +99,7 @@ const Calendar = ({monthIndex, onClick, setMonthIndex}) => {
     return(
         <div key={`${month}-${year}`} className="h-screen font-mono">
             <div className="flex justify-center font-bold text-2xl" onClick={() => setMonthIndex(0)}>
-                <p className="hover:bg-sky-100/80 p-4 mt-1 rounded-2xl" >{displayDate.toLocaleDateString("en-US", {month: "long"})}  : {displayDate.getFullYear()}</p>
+                <p className="hover:bg-sky-100/80 p-4 mt-1 rounded-2xl cursor-pointer select-none" >{displayDate.toLocaleDateString("en-US", {month: "long"})}  : {displayDate.getFullYear()}</p>
             </div>
             <div className="h-3/4">
                 <div className="grid grid-cols-7 w-full text-center font-bold my-3">

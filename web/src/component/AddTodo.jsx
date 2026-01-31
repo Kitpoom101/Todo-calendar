@@ -1,14 +1,14 @@
 import { AnimatePresence, easeOut, motion } from "framer-motion";
 import { useHover } from "../context/HoveringCell";
 import useInputHook from "../hooks/useInputHook";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 const AddTodo = ({onClose, date}) => {
     const { activeCell, setActiveCell } = useHover();
     const [title, setTitle] = useState("");
     const { createInput, loading, error } = useInputHook();
-    
+    const inputRef = useRef(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,8 +34,20 @@ const AddTodo = ({onClose, date}) => {
         Sat: "bg-[#e9d5ff]",
     };
 
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [])
+
     function changeBG(weekday){
         return hoverWeekDayBg[weekday]??"#adb6c4";
+    }
+
+    function exitWithEsc(e){
+        console.log(e.key);
+        if(e.key === "Escape"){
+            e.preventDefault();
+            onClose();
+        }
     }
 
     return(
@@ -76,10 +88,10 @@ const AddTodo = ({onClose, date}) => {
                     <h1>{date.day} / {date.month} / {date.year}</h1>
                 </div>
                 {/* user interact part */}
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} >
                     <p className="bg-amber-100">
                         Description 
-                        <input className="border" type="text" placeholder="Whats on your mind" value={title} onChange={(e) => setTitle(e.target.value)}  />
+                        <input ref={inputRef} className="border" type="text" placeholder="Whats on your mind" value={title} onChange={(e) => setTitle(e.target.value)} tabIndex={0} />
                     </p>
                     <div className={`fixed bottom-4 right-8 border-2  px-4 py-2 rounded-xl ${changeBG(activeCell)} hover:brightness-110`}>
                         <button className="font-mono" type="submit">

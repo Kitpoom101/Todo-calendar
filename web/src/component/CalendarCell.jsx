@@ -44,14 +44,11 @@ const CalendarCell = ({cell, today, onClick}) => {
             ease: "easeIn"
         }}
         className={`${cell.day==today && cell.month==(thisMonth.getMonth() + 1) ? "bg-slate-200":"bg-white"}  
-        p-4 border flex flex-col items-center justify-center `}
+            p-4 border flex flex-col items-center justify-center select-none `}
         onClick={() => clickMethod()}
     >
         {/* inside div */}
-        <div 
-        className={
-            `${cell.monthType=="present" ? "font-bold" : "font-light"}`}
-            >
+        <div className={`${cell.monthType=="present" ? "font-bold" : "font-light"}`}>
             {cell.day}
         </div>
     </motion.div>
